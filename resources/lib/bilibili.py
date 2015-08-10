@@ -115,7 +115,7 @@ class Bili():
                 self._print_info('Generating subtitle')
                 text = website.ass_subtitles_text(
                     font_name=u'黑体',
-                    font_size=36,
+                    font_size=24,
                     resolution='%d:%d' % (self.WIDTH, self.HEIGHT),
                     line_count=12,
                     bottom_margin=0,
