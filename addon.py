@@ -82,8 +82,8 @@ def _play_video(urls_info, show_comments='1'):
         player.showSubtitles(False)
         player.show_subtitle = False
     player.play(playlist)
-    while(not xbmc.abortRequested):
-        xbmc.sleep(100)
+    #while(not xbmc.abortRequested):
+    xbmc.sleep(100)
 
 
 # 首页
@@ -194,11 +194,13 @@ def play_video(url, by_list, show_comments):
     else:
         _print_info('Don\'t fetch subtitle')
         playlist = bili.get_video_urls(url, False)
-    _print_info('%d videos found' % len(playlist[0]))
-    if by_list == '1':
-        _play_video_by_list(playlist, show_comments)
-    else:
-        _play_video(playlist, show_comments)
+    n = len(playlist[0])
+    _print_info('%d videos found' % n)
+    if n > 0:
+        if by_list == '1':
+            _play_video_by_list(playlist, show_comments)
+        else:
+            _play_video(playlist, show_comments)
 
 if __name__ == '__main__':
     plugin.run()
