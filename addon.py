@@ -1,4 +1,5 @@
-#coding: utf8
+# coding: utf-8
+
 from xbmcswift2 import Plugin, xbmcgui, xbmc
 from resources.lib.bilibili import *
 from resources.lib.subtitle import subtitle_offset
@@ -59,7 +60,7 @@ def play_video(cid, show_comments):
             print_info('Play with subtitle')
             subtitle_path = get_subtitle(cid)
             print_info('subtitle path %s' % subtitle_path)
-            player.setSubtitle(get_tmp_dir() + '/' + subtitle_path)
+            player.setSubtitle(subtitle_path)
         else:
             print_info('Play without subtitle')
             player.showSubtitles(False)

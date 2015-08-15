@@ -1,10 +1,10 @@
-#coding: utf8
+# coding: utf-8
 
 from config import *
-import xml.dom.minidom as minidom
+from danmaku2ass.danmaku2ass import Danmaku2ASS
 import tempfile
 import utils
-from niconvert import create_website
+import xml.dom.minidom as minidom
 
 
 def get_tmp_dir():
@@ -26,7 +26,6 @@ def get_video_urls(cid):
     # 解析RSS页面
     print_info('Getting video address by interface page')
     content = utils.get_page_content(interface_full_url)
-    print_info('Interface page length: ' + str(len(content)))
     doc = minidom.parseString(content)
     parts = doc.getElementsByTagName('durl')
     print_info('Video parts found: ' + str(len(parts)))
@@ -40,29 +39,20 @@ def get_video_urls(cid):
 
 
 def get_subtitle(cid):
-    page_full_url = COMMENT_URL.format(cid)
-    print_info('Page full url: ' + page_full_url)
-    website = None
-    try:
-        website = create_website(page_full_url)
-        if website is None:
-            print_info(page_full_url + " not supported")
-            return ''
-        else:
-            print_info('Generating subtitle')
-            text = website.ass_subtitles_text(
-                font_name=u'黑体',
-                font_size=56,
-                resolution='%d:%d' % (WIDTH, HEIGHT),
-                line_count=12,
-                bottom_margin=0,
-                tune_seconds=0
-            )
-            f = open(get_tmp_dir() + '/tmp.ass', 'w')
-            f.write(text.encode('utf8'))
-            f.close()
-            print_info('Subtitle generation succeeded!')
-            return 'tmp.ass'
-    except Exception as e:
-        print_info("Exception raised when generating subtitle: %s" % e)
-        return ''
+    url = COMMENT_URL.format(cid)
+    print_info('Page full url: ' + url)
+    input = get_tmp_dir() + '/tmp.xml'
+    output = get_tmp_dir() + '/tmp.ass'
+
+    local_file = open(input, "w")
+    local_file.write(utils.get_page_content(url))
+    local_file.close()
+
+    Danmaku2ASS(input, output, WIDTH, HEIGHT,
+        font_size=FONT_SIZE,
+        text_opacity=TEXT_OPACITY,
+        is_reduce_comments=IS_REDUCE_COMMENTS,
+        duration_marquee=DURATION_MARQUEE,
+        duration_still=DURATION_STILL
+    )
+    return output
