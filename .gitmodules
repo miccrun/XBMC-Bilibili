@@ -1,3 +1,3 @@
 [submodule "resources/lib/danmaku2ass"]
 	path = resources/lib/danmaku2ass
-	url = git@github.com:m13253/danmaku2ass.git
+	url = git@github.com:miccrun/danmaku2ass.git
