@@ -46,7 +46,6 @@ def play_video(cid, show_comments):
         stack_url = 'stack://' + ' , '.join(video_list)
         playlist.add(stack_url, list_item)
         player = BiliPlayer()
-        player.play(playlist)
         if show_comments == '1':
             print_info('Play with subtitle')
             subtitle_path = get_subtitle(cid)
@@ -56,8 +55,9 @@ def play_video(cid, show_comments):
             print_info('Play without subtitle')
             player.showSubtitles(False)
             player.show_subtitle = False
-        # while(not xbmc.abortRequested):
-        xbmc.sleep(100)
+        while(not xbmc.abortRequested):
+            xbmc.sleep(100)
+        player.play(playlist)
     else:
         print_info('no video found')
 
