@@ -2,9 +2,9 @@
 
 from xbmcswift2 import Plugin, xbmcgui, xbmc
 from resources.lib.bilibili import *
+from resources.lib.subtitle import subtitle_offset
 
 plugin = Plugin()
-
 
 def print_info(info):
     print '[BiliAddon]: ' + info
@@ -23,8 +23,16 @@ class BiliPlayer(xbmc.Player):
         self.subtitle = subtitle
 
     def onPlayBackStarted(self):
+        print_info('on playback started, set subtitle')
+        time = float(self.getTime())
         if self.show_subtitle:
-            self.setSubtitles(self.subtitle)
+            print_info(self.subtitle)
+            if time > 1:
+                print_info('offset! %d' % time)
+                self.setSubtitles(subtitle_offset(self.subtitle, -time))
+            else:
+                print_info('no offset!')
+                self.setSubtitles(self.subtitle)
         else:
             self.showSubtitles(False)
 
@@ -36,7 +44,6 @@ def play_video(cid, show_comments):
     print_info('Getting video urls')
     video_list = get_video_urls(cid)
     count = len(video_list)
-    print_info('%d videos found' % count)
     if count > 0:
         playlist = xbmc.PlayList(1)
         playlist.clear()
