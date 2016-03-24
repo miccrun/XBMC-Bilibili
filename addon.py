@@ -1,13 +1,15 @@
 # coding: utf-8
 
-from xbmcswift2 import Plugin, xbmcgui, xbmc
+from xbmcswift2 import Plugin
+import xbmc, xbmcgui
+import time
 from resources.lib.bilibili import *
 from resources.lib.subtitle import subtitle_offset
 
 plugin = Plugin()
 
 def print_info(info):
-    print '[BiliAddon]: ' + info
+    xbmc.log("[BiliAddon] %s" % info, level=xbmc.LOGERROR)
 
 
 class BiliPlayer(xbmc.Player):
@@ -36,10 +38,14 @@ class BiliPlayer(xbmc.Player):
         else:
             self.showSubtitles(False)
 
+print_info('init player')
+player = BiliPlayer()
+start_timestamp = str(int(time.time()))
 
 # 播放视频
 @plugin.route('/video/<cid>/<show_comments>/')
 def play_video(cid, show_comments):
+    xbmcgui.Window(10000).setProperty("StartTimestamp", start_timestamp)
     plugin.notify("Loading video...", "Bilibili", 1000)
     print_info('Getting video urls')
     video_list = get_video_urls(cid)
@@ -52,7 +58,6 @@ def play_video(cid, show_comments):
 
         stack_url = 'stack://' + ' , '.join(video_list)
         playlist.add(stack_url, list_item)
-        player = BiliPlayer()
         if show_comments == '1':
             print_info('Play with subtitle')
             subtitle_path = get_subtitle(cid)
@@ -62,12 +67,22 @@ def play_video(cid, show_comments):
             print_info('Play without subtitle')
             player.showSubtitles(False)
             player.show_subtitle = False
-        while(not xbmc.abortRequested):
-            xbmc.sleep(100)
         player.play(playlist)
     else:
         print_info('no video found')
 
+    print_info('play route end')
+
 
 if __name__ == '__main__':
     plugin.run()
+
+monitor = xbmc.Monitor()
+while not monitor.abortRequested():
+    # Sleep/wait for abort for 1 seconds
+    if monitor.waitForAbort(1):
+        # Abort was requested while waiting. We should exit
+        break
+    if xbmc.getInfoLabel("Window(10000).Property(StartTimestamp)") != start_timestamp:
+        print_info('new video played, add-on ends here')
+        break

@@ -5,6 +5,7 @@ from danmaku2ass.danmaku2ass import Danmaku2ASS
 import tempfile
 import utils
 import xml.dom.minidom as minidom
+import xbmc
 
 
 def get_tmp_dir():
@@ -17,14 +18,13 @@ def get_tmp_dir():
 
 
 def print_info(info):
-    print '[Bilibili]: ' + info
+    xbmc.log("[BiliAddon] %s" % info, level=xbmc.LOGERROR)
 
 
 def get_video_urls(cid):
     interface_full_url = INTERFACE_URL.format(str(cid))
     print_info('Interface url: ' + interface_full_url)
     # 解析RSS页面
-    print_info('Getting video address by interface page')
     content = utils.get_page_content(interface_full_url)
     doc = minidom.parseString(content)
     parts = doc.getElementsByTagName('durl')
