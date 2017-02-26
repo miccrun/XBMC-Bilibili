@@ -1,31 +1,38 @@
 # coding: utf-8
-from danmaku2ass.danmaku2ass import Danmaku2ASS
-import config
-import utils
-import xbmc
 import json
+import re
+import config
+from danmaku2ass.danmaku2ass import Danmaku2ASS
+import utils
+from utils import print_info
 
 
-def print_info(info):
-    xbmc.log("[BiliAddon] %s" % info, level=xbmc.LOGERROR)
-
-
-def get_video_urls(av, page):
-    interface_full_url = config.INTERFACE_URL.format(str(av), str(page))
-    print_info('Interface url: ' + interface_full_url)
-    data = utils.get_url_content(interface_full_url)
+def get_video(av, page):
+    interface_url = config.INTERFACE_URL.format(str(av), str(page))
+    print_info('Interface url: ' + interface_url)
+    data = utils.get_url_content(interface_url)
     json_obj = json.loads(data)
 
-    result = []
+    last_time = 0
+    result = {}
+    result['videos'] = []
+    result['position'] = []
+    cid = json_obj['cid']
     for value in json_obj['data']:
         if value['name'] == u"\u8d85\u6e05FLV":
             for item in value['parts']:
-                result.append(item['url'])
+                res = re.search('^(\d{2}):(\d{2})', item['length'])
+                video_length = int(res.group(1)) * 60 + int(res.group(2))
+                last_time += video_length
+
+                result['position'].append((last_time, last_time + video_length))
+                result['videos'].append(item['url'])
+    get_subtitle(cid)
 
     return result
 
 def get_subtitle(cid):
-    url = config.COMMENT_URL.format(cid)
+    url = config.COMMENT_URL.format(str(cid))
     print_info('Comment url: ' + url)
     input = utils.get_tmp_dir() + '/tmp.xml'
     output = utils.get_tmp_dir() + '/tmp.ass'
@@ -41,4 +48,3 @@ def get_subtitle(cid):
         duration_marquee=config.DURATION_MARQUEE,
         duration_still=config.DURATION_STILL
     )
-    return output

@@ -1,9 +1,10 @@
 # coding: utf8
 import gzip
 from StringIO import StringIO
-import urllib2
-import zlib
 import tempfile
+import urllib2
+import xbmc
+import zlib
 
 
 def _get_gzip_content(content):
@@ -28,9 +29,10 @@ def get_url_content(url):
         return ''
 
 def get_tmp_dir():
-    if len(TEMP_DIR) != 0:
-        return TEMP_DIR
     try:
         return tempfile.gettempdir()
     except:
-        return TEMP_DIR
+        return '/tmp'
+
+def print_info(info):
+    xbmc.log("[BiliAddon] %s" % info, level=xbmc.LOGERROR)
