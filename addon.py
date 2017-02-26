@@ -15,8 +15,14 @@ class BiliPlayer(xbmc.Player):
 
     def onPlayBackStarted(self):
         print_info('On playback started, set subtitle')
-        time = float(self.getTime())
-        print_info(time)
+        time = int(self.getTime())
+        for index, value in enumerate(self.position):
+            if time >= value[0] and time < value[1]:
+                subtitle_path = '/tmp/' + str(index + 1) + '.ass'
+                self.setSubtitles(subtitle_path)
+                self.showSubtitles(True)
+                print_info('Setting subtitle: ' + subtitle_path)
+                break
 
 
 print_info('Init add-on')

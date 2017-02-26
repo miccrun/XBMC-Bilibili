@@ -23,10 +23,9 @@ def get_video(av, page):
             for item in value['parts']:
                 res = re.search('^(\d{2}):(\d{2})', item['length'])
                 video_length = int(res.group(1)) * 60 + int(res.group(2))
-                last_time += video_length
-
                 result['position'].append((last_time, last_time + video_length))
                 result['videos'].append(item['url'])
+                last_time += video_length
     get_subtitle(cid)
 
     return result
