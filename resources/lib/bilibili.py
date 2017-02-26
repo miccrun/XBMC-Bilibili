@@ -26,7 +26,7 @@ def get_video(av, page):
                 result['position'].append((last_time, last_time + video_length))
                 result['videos'].append(item['url'])
                 last_time += video_length
-    get_subtitle(cid)
+    split_subtitle(get_subtitle(cid), result['position'])
 
     return result
 
@@ -47,3 +47,9 @@ def get_subtitle(cid):
         duration_marquee=config.DURATION_MARQUEE,
         duration_still=config.DURATION_STILL
     )
+    return output
+
+def split_subtitle(file_path, position):
+    for index, value in enumerate(position):
+        output = '/tmp/' + str(index + 1) + '.ass'
+        utils.subtitle_offset(file_path, output, value[0], value[1])
