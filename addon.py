@@ -42,13 +42,11 @@ print_info('init player')
 player = BiliPlayer()
 start_timestamp = str(int(time.time()))
 
-# 播放视频
-@plugin.route('/video/<cid>/<show_comments>/')
-def play_video(cid, show_comments):
+@plugin.route('/video/<av>/<page>')
+def play_video(av, page):
     xbmcgui.Window(10000).setProperty("StartTimestamp", start_timestamp)
     plugin.notify("Loading video...", "Bilibili", 1000)
-    print_info('Getting video urls')
-    video_list = get_video_urls(cid)
+    video_list = get_video_urls(av, page)
     count = len(video_list)
     if count > 0:
         playlist = xbmc.PlayList(1)
@@ -58,20 +56,12 @@ def play_video(cid, show_comments):
 
         stack_url = 'stack://' + ' , '.join(video_list)
         playlist.add(stack_url, list_item)
-        if show_comments == '1':
-            print_info('Play with subtitle')
-            subtitle_path = get_subtitle(cid)
-            print_info('subtitle path %s' % subtitle_path)
-            player.setSubtitle(subtitle_path)
-        else:
-            print_info('Play without subtitle')
-            player.showSubtitles(False)
-            player.show_subtitle = False
+        # subtitle_path = get_subtitle(cid)
+        # print_info('subtitle path %s' % subtitle_path)
+        # player.setSubtitle(subtitle_path)
         player.play(playlist)
     else:
         print_info('no video found')
-
-    print_info('play route end')
 
 
 if __name__ == '__main__':
