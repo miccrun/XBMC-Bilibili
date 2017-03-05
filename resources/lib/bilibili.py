@@ -21,7 +21,7 @@ def get_video(av, page):
     for value in json_obj['data']:
         if value['name'] == u"\u8d85\u6e05FLV":
             for item in value['parts']:
-                res = re.search('^(\d{2}):(\d{2})', item['length'])
+                res = re.search('^(\d{2,}):(\d{2})', item['length'])
                 video_length = int(res.group(1)) * 60 + int(res.group(2))
                 result['position'].append((last_time, last_time + video_length))
                 result['videos'].append(item['url'])
